@@ -30,16 +30,18 @@ fn example_drv_output(handle: c.ErlDrvData, buff: [*c]u8, bufflen: c.ErlDrvSizeT
     _ = c.driver_output(d.port, @ptrCast([*c]u8, &res), 1);
 }
 
-const driver = c.ErlDrvEntry{
+var driver: [*c]c.ErlDrvEntry = blk: {
+    break :blk &struct {
+        var string_temp = "example_drv".*;
+
+        var driver_temp = c.ErlDrvEntry{
         .init = null,
         .start = example_drv_start,
         .stop = example_drv_stop,
         .output = example_drv_output,
         .ready_input = null,
         .ready_output = null,
-        .driver_name = "example_drv", // this only works by patching erl_driver.h to use const char *
-        // .driver_name = @ptrCast([*c]u8, "example_drv"),
-        // .driver_name = @intToPtr([*c]u8, @ptrToInt("example_drv")), // ! Won't work with const *
+        .driver_name = &string_temp,
         .finish = null,
         .handle = null,
         .control = null,
@@ -57,8 +59,10 @@ const driver = c.ErlDrvEntry{
         .process_exit = null,
         .stop_select = null,
         .emergency_close = null,
-    };
+        };
+    }.driver_temp;
+};
 
 export fn driver_init() callconv(.C) *const c.ErlDrvEntry {
-    return &driver;
+    return driver;
 }
