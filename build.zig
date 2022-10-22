@@ -13,8 +13,10 @@ pub fn build(b: *std.build.Builder) void {
     lib.setBuildMode(mode);
     lib.addSystemIncludePath(ERLANG_PATH ++ "usr/include");
     lib.addLibraryPath(ERLANG_PATH ++ "usr/lib");
+    lib.linkLibC();
+    lib.force_pic = true;
+    lib.linker_allow_shlib_undefined = true;
     lib.install();
-    // lib.force_pic = true;
 
     const main_tests = b.addTest("src/port_driver.zig");
     main_tests.setBuildMode(mode);
