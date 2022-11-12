@@ -1,7 +1,10 @@
 const std = @import("std");
+const F = std.build.FileSource;
 
-// TODO Configurable || auto discovery
-const ERLANG_PATH = "/Users/borgoat/.asdf/installs/erlang/25.1.1/";
+const erlDriverPkg = std.build.Pkg{
+    .name = "erl_driver",
+    .source = std.build.FileSource.relative("src/main.zig"),
+};
 
 pub fn build(b: *std.build.Builder) void {
 
@@ -9,14 +12,13 @@ pub fn build(b: *std.build.Builder) void {
     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall.
     const mode = b.standardReleaseOptions();
 
-    const lib = b.addSharedLibrary("er_zig_driver", "src/port_driver.zig", b.version(1, 0, 0));
-    lib.setBuildMode(mode);
-    lib.addSystemIncludePath(ERLANG_PATH ++ "usr/include");
-    lib.addLibraryPath(ERLANG_PATH ++ "usr/lib");
-    lib.linkLibC();
-    lib.force_pic = true;
-    lib.linker_allow_shlib_undefined = true;
-    lib.install();
+    const example_driver = b.addSharedLibrary("example_driver", "example_driver/example_driver.zig", b.version(1, 0, 0));
+    example_driver.addPackage(erlDriverPkg);
+    example_driver.setBuildMode(mode);
+    example_driver.linkLibC();
+    example_driver.force_pic = true;
+    example_driver.linker_allow_shlib_undefined = true;
+    example_driver.install();
 
     const main_tests = b.addTest("src/port_driver.zig");
     main_tests.setBuildMode(mode);
