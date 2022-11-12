@@ -1,4 +1,5 @@
 const erl = @import("erl_driver").erl;
+const options = @import("options");
 
 const ExampleData = struct { port: erl.ErlDrvPort };
 
@@ -38,7 +39,7 @@ var driver: [*c]erl.ErlDrvEntry = blk: {
             .output = driverOutput,
             .ready_input = null,
             .ready_output = null,
-            .driver_name = "example_driver",
+            .driver_name = @ptrCast([*:0]const u8, options.driver_name),
             .finish = null,
             .handle = null,
             .control = null,

@@ -3,9 +3,15 @@ const std = @import("std");
 /// Build a shared library as a valid Erlang driver.
 pub fn addErlangDriver(b: *std.build.Builder, name: []const u8, root_src: ?[]const u8) !*std.build.LibExeObjStep {
     const driver = b.addSharedLibrary(name, root_src, .unversioned);
+
     driver.linkLibC();
     driver.force_pic = true;
     driver.linker_allow_shlib_undefined = true;
+
+    const options = b.addOptions();
+    options.addOption(@TypeOf(name), "driver_name", name);
+    driver.addOptions("options", options);
+
     const driver_install = try b.allocator.create(ErlDriverInstallStep);
     driver_install.* = .{
         .builder = b,
@@ -15,6 +21,7 @@ pub fn addErlangDriver(b: *std.build.Builder, name: []const u8, root_src: ?[]con
     };
     driver_install.step.dependOn(&driver.step);
     b.getInstallStep().dependOn(&driver_install.step);
+
     return driver;
 }
 
