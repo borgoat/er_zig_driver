@@ -6,16 +6,15 @@ const erlDriverPkg = std.build.Pkg{
     .source = std.build.FileSource.relative("src/main.zig"),
 };
 
-pub fn build(b: *std.build.Builder) void {
+pub fn build(b: *std.build.Builder) !void {
 
     // Standard release options allow the person running `zig build` to select
     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall.
     const mode = b.standardReleaseOptions();
 
-    const example_driver = b.addSharedLibrary("example_driver", "example_driver/example_driver.zig", b.version(1, 0, 0));
+    const example_driver = try erbuild.addErlangDriver(b, "example_drv", "example_driver/example_driver.zig");
     example_driver.addPackage(erlDriverPkg);
     example_driver.setBuildMode(mode);
-    erbuild.libraryAsDriver(example_driver);
 
     const main_tests = b.addTest("src/port_driver.zig");
     main_tests.setBuildMode(mode);
