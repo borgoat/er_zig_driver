@@ -1,6 +1,6 @@
 const std = @import("std");
 
-/// Build a shared library as a valid erlang driver.
+/// Build a shared library as a valid Erlang driver.
 pub fn addErlangDriver(b: *std.build.Builder, name: []const u8, root_src: ?[]const u8) !*std.build.LibExeObjStep {
     const driver = b.addSharedLibrary(name, root_src, .unversioned);
     driver.linkLibC();
@@ -22,6 +22,8 @@ pub fn addErlangDriver(b: *std.build.Builder, name: []const u8, root_src: ?[]con
 /// > The Name specified is to correspond to the filename of the dynamically loadable object file
 /// > residing in the directory specified as Path, but without the extension (that is, .so).
 /// -- from https://www.erlang.org/doc/man/erl_ddll.html#load-2
+///
+/// * See https://github.com/ziglang/zig/issues/2231 for more info
 const ErlDriverInstallStep = struct {
     builder: *std.build.Builder,
     step: std.build.Step,
