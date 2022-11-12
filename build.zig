@@ -1,5 +1,5 @@
 const std = @import("std");
-const F = std.build.FileSource;
+const erbuild = @import("src/build.zig");
 
 const erlDriverPkg = std.build.Pkg{
     .name = "erl_driver",
@@ -15,10 +15,7 @@ pub fn build(b: *std.build.Builder) void {
     const example_driver = b.addSharedLibrary("example_driver", "example_driver/example_driver.zig", b.version(1, 0, 0));
     example_driver.addPackage(erlDriverPkg);
     example_driver.setBuildMode(mode);
-    example_driver.linkLibC();
-    example_driver.force_pic = true;
-    example_driver.linker_allow_shlib_undefined = true;
-    example_driver.install();
+    erbuild.libraryAsDriver(example_driver);
 
     const main_tests = b.addTest("src/port_driver.zig");
     main_tests.setBuildMode(mode);
